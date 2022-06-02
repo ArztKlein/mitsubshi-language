@@ -1,13 +1,21 @@
 from sly import Lexer, Parser
 
+from mitsubishi_language.services import Printer
+
+class MitsubishiLanguage:
+    SERVICES = [Printer]
+    SERVICE_REGEX = '(' + '|'.join([service.name() for service in SERVICES]) + ')'
+
 class CalcLexer(Lexer):
-    tokens = {STRING, PRINT, COMPUTE, INSERT}
+    tokens = {STRING, SERVICE, INSERT}
     ignore = ' \t'
 
     # Tokens
     STRING = r'''("[^"\\]*(\\.[^"\\]*)*"|'[^'\\]*(\\.[^'\\]*)*')'''
-    PRINT = "mitsubishi electric printer"
 
+    # Generate the regex for a service
+    SERVICE = MitsubishiLanguage.SERVICE_REGEX
+    
     # Special symbols
     INSERT = r'->'
 
@@ -35,16 +43,25 @@ class CalcLexer(Lexer):
 class CalcParser(Parser):
     tokens = CalcLexer.tokens
 
-    @_("STRING INSERT PRINT")
+    @_("STRING INSERT SERVICE")
     def statement(self, p):
-        print(p.STRING)
+        self.get_service(p.SERVICE).insert(p.STRING)
+
+    def __init__(self):
+        self.services = {}
+
+        for service in MitsubishiLanguage.SERVICES:
+            self.services[service.name()] = service
+
+    def get_service(self, name):
+        return self.services[name]
 
 if __name__ == '__main__':
     lexer = CalcLexer()
     parser = CalcParser()
     while True:
         try:
-            text = input('calc > ')
+            text = input('>>> ')
         except EOFError:
             break
         if text:
