@@ -1,9 +1,9 @@
 from sly import Lexer, Parser
 
-from mitsubishi_language.services import Printer
+from mitsubishi_language.services import *
 
 class MitsubishiLanguage:
-    SERVICES = [Printer]
+    SERVICES = [Printer, KeyboardInput]
     SERVICE_REGEX = '(' + '|'.join([service.name() for service in SERVICES]) + ')'
 
 class CalcLexer(Lexer):
@@ -43,9 +43,13 @@ class CalcLexer(Lexer):
 class CalcParser(Parser):
     tokens = CalcLexer.tokens
 
-    @_("STRING INSERT SERVICE")
-    def statement(self, p):
-        self.get_service(p.SERVICE).insert(p.STRING)
+    @_("value INSERT SERVICE")
+    def value(self, p):
+        return self.get_service(p.SERVICE).insert(p.value)
+
+    @_("STRING")
+    def value(self, p):
+        return p.STRING
 
     def __init__(self):
         self.services = {}
