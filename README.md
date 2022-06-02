@@ -4,7 +4,7 @@ An [Estoteric Language](https://en.wikipedia.org/wiki/Esoteric_programming_langu
 Mitsubishi Language is designed to be general purpose, however not practical.
 
 ## Installation/Running
-### Preruiquisites
+### Prerequisites
 - Python 3 must be installed.
 ### Installation
 To install Mitsubishi Language, clone this repository.  
