@@ -44,8 +44,12 @@ class CalcParser(Parser):
     tokens = CalcLexer.tokens
 
     @_("value INSERT SERVICE")
-    def value(self, p):
+    def statement(self, p):
         return self.get_service(p.SERVICE).insert(p.value)
+    
+    @_("statement INSERT SERVICE")
+    def statement(self, p):
+        return self.get_service(p.SERVICE).insert(p.statement)
 
     @_("STRING")
     def value(self, p):
