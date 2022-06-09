@@ -32,3 +32,18 @@ In this example, a string is created, and then piped into `mitsubishi electric p
 ```
 "Hello, world!"->mitsubishi electric printer
 ```
+
+## Variables
+The Mitsubishi language is weakly typed.
+Variables are prefixed with an @ (at) symbol. Unlike services, variables are not allowed to have a space in their name.  
+*Put text into a variable, and then print it*
+```
+"Hello, world"->@variable_name
+@variable_name->mitsubishi electric printer
+```
+
+Another example that will ask the user for their name, store it into a variable, then print "Your name is: " with the name.
+```
+"What is your name? "->mitsubishi keyboard->@name
+"Your name is: " + @name->mitsubishi electric printer
+```
