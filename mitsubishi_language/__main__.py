@@ -11,7 +11,7 @@ class CalcLexer(Lexer):
     def __init__(self):
          self.nesting_level = 0
 
-    tokens = {STRING, SERVICE, INSERT, NUMBER, PLUS, MINUS, TIMES, DIVIDE, POWER, ASSIGN, LPAREN, RPAREN, IDENTIFIER}
+    tokens = {STRING, SERVICE, INSERT, NUMBER, PLUS, MINUS, TIMES, DIVIDE, POWER, ASSIGN, LPAREN, RPAREN, VARIABLE}
     ignore = ' \t'
 
     literals = { '(', ')', '{', '}', '.', '!' }
@@ -56,7 +56,7 @@ class CalcLexer(Lexer):
         t.value = self.remove_quotes(t.value)
         return t
 
-    IDENTIFIER = r'[a-zA-Z_][a-zA-Z0-9_]*'
+    VARIABLE = r'@[a-zA-Z_][a-zA-Z0-9_]*'
 
     def remove_quotes(self, text: str):
         if text.startswith('\"') or text.startswith('\''):
@@ -78,17 +78,20 @@ class CalcParser(Parser):
 
     def __init__(self):
         self.services = {}
+        self.variables = {}
 
         for service in MitsubishiLanguage.SERVICES:
             self.services[service.name()] = service
 
+    def get_variable(self, identifier):
+        if(identifier.startswith("@")):
+            identifier = identifier[1:]
+        
+        return self.variables[identifier]
+
     @_("value INSERT SERVICE")
-    def statement(self, p):
+    def value(self, p):
         return self.get_service(p.SERVICE).insert(p.value)
-    
-    @_("statement INSERT SERVICE")
-    def statement(self, p):
-        return self.get_service(p.SERVICE).insert(p.statement)
 
     @_("value POWER value")
     def value(self, p):
@@ -101,6 +104,14 @@ class CalcParser(Parser):
     @_("value PLUS value")
     def value(self, p):
         return p.value0 + p.value1
+
+    @_("VARIABLE")
+    def value(self, p):
+        return self.get_variable(p.VARIABLE)
+
+    @_("value INSERT VARIABLE")
+    def value(self, p):
+        self.variables[p.VARIABLE[1:]] = p.value
 
     @_("NUMBER")
     def value(self, p):
@@ -122,4 +133,5 @@ if __name__ == '__main__':
         except EOFError:
             break
         if text:
-            parser.parse(lexer.tokenize(text))
+            tokens = lexer.tokenize(text)
+            parser.parse(tokens)
