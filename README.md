@@ -6,6 +6,7 @@ Mitsubishi Language is designed to be general purpose, however not practical.
 ## Installation/Running
 ### Prerequisites
 - Python 3 must be installed.
+- All the required packages in the requirements.txt
 ### Installation
 To install Mitsubishi Language, clone this repository.  
 `git clone https://github.com/ArztKlein/mitsubshi-language.git`
